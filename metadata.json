@@ -1,0 +1,5 @@
+{
+  "name": "Ryan for Georgia",
+  "description": "Official campaign website for Marcus Ryan, Democrat for Georgia State House Representative 2027. Leadership, Action, Results.",
+  "requestFramePermissions": ["geolocation"]
+}

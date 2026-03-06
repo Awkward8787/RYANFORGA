@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", sans-serif;
+
+  --color-ga-navy: #0A1F44;
+  --color-ga-red: #BF0D3E;
+  --color-ga-gold: #D4AF37;
+  --color-ga-cream: #FDFCF8;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-ga-cream text-ga-navy font-sans;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-bold;
+  }
+}
+
+.glass-nav {
+  @apply bg-white/90 backdrop-blur-md border-b border-ga-navy/10;
+}
+
+.btn-primary {
+  @apply bg-ga-red text-white px-6 py-3 rounded-full font-bold transition-all hover:bg-ga-red/90 hover:scale-105 active:scale-95 shadow-md;
+}
+
+.btn-secondary {
+  @apply bg-ga-navy text-white px-6 py-3 rounded-full font-bold transition-all hover:bg-ga-navy/90 hover:scale-105 active:scale-95 shadow-md;
+}
+
+.btn-outline {
+  @apply border-2 border-ga-navy text-ga-navy px-6 py-3 rounded-full font-bold transition-all hover:bg-ga-navy hover:text-white hover:scale-105 active:scale-95;
+}
+
+.card-hover {
+  @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-white border border-ga-navy/5;
+}
