@@ -90,7 +90,7 @@ const Navbar = () => {
               <span className={`text-2xl font-display font-black tracking-tighter ${scrolled ? 'text-ga-navy' : 'text-white'}`}>
                 RYAN<span className="text-ga-red">FOR</span>GA
               </span>
-              <span className={`text-[10px] uppercase tracking-[0.2em] font-bold ${scrolled ? 'text-ga-navy/60' : 'text-white/80'}`}>
+              <span className={`text-[10px] uppercase tracking-widest sm:tracking-[0.2em] font-bold ${scrolled ? 'text-ga-navy/60' : 'text-white/80'}`}>
                 Democrat for State House Rep • District 176
               </span>
             </a>
@@ -244,10 +244,10 @@ export default function App() {
             transition={{ duration: 0.8 }}
           >
             <p className="uppercase tracking-[0.4em] font-bold text-ga-gold mb-4">Leadership. Action. Results.</p>
-            <h1 className="text-6xl md:text-8xl font-display font-black mb-6 leading-tight">
+            <h1 className="text-4xl sm:text-6xl md:text-8xl font-display font-black mb-6 leading-tight">
               MARCUS RYAN <br />
-              <span className="text-ga-red">FOR STATE HOUSE REP</span>
-              <span className="block text-3xl md:text-5xl text-white mt-4 tracking-widest">DISTRICT 176</span>
+              <span className="text-ga-red block sm:inline">FOR STATE HOUSE REP</span>
+              <span className="block text-2xl sm:text-3xl md:text-5xl text-white mt-4 tracking-widest">DISTRICT 176</span>
             </h1>
             <p className="text-xl md:text-2xl max-w-3xl mx-auto mb-10 text-white/90 font-light leading-relaxed">
               Building a stronger, safer, and more prosperous Georgia for every family. 
