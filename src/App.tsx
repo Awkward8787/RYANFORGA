@@ -91,7 +91,7 @@ const Navbar = () => {
                 RYAN<span className="text-ga-red">FOR</span>GA
               </span>
               <span className={`text-[10px] uppercase tracking-widest sm:tracking-[0.2em] font-bold ${scrolled ? 'text-ga-navy/60' : 'text-white/80'}`}>
-                Democrat for State House Rep • District 176
+                Democrat for State House • District 176
               </span>
             </a>
           </div>
@@ -246,7 +246,7 @@ export default function App() {
             <p className="uppercase tracking-[0.4em] font-bold text-ga-gold mb-4">Leadership. Action. Results.</p>
             <h1 className="text-4xl sm:text-6xl md:text-8xl font-display font-black mb-6 leading-tight">
               MARCUS RYAN <br />
-              <span className="text-ga-red block sm:inline">FOR STATE HOUSE REP</span>
+              <span className="text-ga-red block sm:inline">FOR STATE HOUSE</span>
               <span className="block text-2xl sm:text-3xl md:text-5xl text-white mt-4 tracking-widest">DISTRICT 176</span>
             </h1>
             <p className="text-xl md:text-2xl max-w-3xl mx-auto mb-10 text-white/90 font-light leading-relaxed">
@@ -325,7 +325,7 @@ export default function App() {
               </p>
               <p>
                 With a background in community development and economic strategy, Marcus understands 
-                the challenges facing our state. He's running for Georgia State House Rep, District 176 to ensure 
+                the challenges facing our state. He's running for Georgia State House, District 176 to ensure 
                 that every family has a seat at the table and every child has a path to success.
               </p>
               <div className="pt-4 grid grid-cols-2 gap-6">
@@ -567,7 +567,7 @@ export default function App() {
                   RYAN<span className="text-ga-red">FOR</span>GA
                 </span>
                 <span className="text-xs uppercase tracking-[0.3em] font-bold text-ga-gold">
-                  Democrat for State House Rep • District 176
+                  Democrat for State House • District 176
                 </span>
               </a>
               <p className="text-white/60 max-w-md mb-8 leading-relaxed">
