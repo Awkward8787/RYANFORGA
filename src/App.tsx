@@ -319,7 +319,7 @@ export default function App() {
             <h3 className="text-3xl font-bold mb-6 text-ga-navy">A Democrat Fighting for Georgia's Future</h3>
             <div className="space-y-6 text-ga-navy/80 leading-relaxed text-lg">
               <p>
-                Marcus Ryan is a dedicated Democrat, community leader, small business advocate, and lifelong Georgian. 
+                Marcus Ryan is a dedicated Democrat, United States Marine, community leader, and lifelong Georgian. 
                 Raised with the values of hard work and integrity, Marcus has spent his career building 
                 solutions that work for people, not special interests.
               </p>
@@ -339,8 +339,8 @@ export default function App() {
                 <div className="flex items-start">
                   <CheckCircle2 className="text-ga-red mr-3 mt-1" size={20} />
                   <div>
-                    <p className="font-bold">Proven Leader</p>
-                    <p className="text-sm">Decades of community service</p>
+                    <p className="font-bold">US Marine Veteran</p>
+                    <p className="text-sm">Served with honor and distinction</p>
                   </div>
                 </div>
               </div>
