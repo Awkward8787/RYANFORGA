@@ -299,7 +299,7 @@ export default function App() {
           >
             <div className="aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl">
               <img 
-                src="https://res.cloudinary.com/dkolptikx/image/upload/v1772765193/Main_nufbkz.png" 
+                src="https://www.dropbox.com/scl/fi/9lp9hzqq5wp05bweo4km3/MarcusT.Ryan.png?rlkey=avd5m0741opf5bb0mt5jbisvq&st=5wlljzps&raw=1" 
                 alt="Marcus Ryan" 
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
