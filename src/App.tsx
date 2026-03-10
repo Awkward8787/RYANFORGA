@@ -464,24 +464,12 @@ export default function App() {
 
       {/* Events Section */}
       <Section id="events" subtitle="Connect" title="Upcoming Events">
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-1 max-w-2xl mx-auto gap-8">
           <EventCard 
-            title="Community Town Hall" 
-            date="Oct 15, 2026" 
-            time="6:00 PM" 
-            location="Atlanta Public Library, Central Branch"
-          />
-          <EventCard 
-            title="Small Business Roundtable" 
-            date="Nov 02, 2026" 
-            time="10:00 AM" 
-            location="The Innovation Hub, Savannah"
-          />
-          <EventCard 
-            title="Campaign Kickoff Rally" 
-            date="Jan 12, 2027" 
-            time="5:30 PM" 
-            location="Liberty Square Park, Macon"
+            title="Election Day" 
+            date="Nov 03, 2026" 
+            time="7:00 AM - 7:00 PM" 
+            location="Your Local Polling Place, District 176"
           />
         </div>
         <OfficeFinder />
@@ -554,6 +542,15 @@ export default function App() {
             <p className="italic text-xl mb-2">"I've seen Marcus in action. He doesn't just talk about problems; he rolls up his sleeves and fixes them."</p>
             <p className="font-bold uppercase tracking-widest text-xs">— David M., Community Leader</p>
           </div>
+        </div>
+      </div>
+
+      {/* Voting Reminder Strip */}
+      <div className="bg-ga-gold py-8 px-4 text-center border-b border-ga-navy/10">
+        <div className="max-w-4xl mx-auto">
+          <p className="text-xl md:text-2xl font-bold text-ga-navy">
+            Vote FOR Markus T Ryan for State House election in 2026 district 176 November 3, 2026. A leader we can trust.
+          </p>
         </div>
       </div>
 
