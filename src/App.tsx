@@ -236,6 +236,12 @@ export default function App() {
   const [news, setNews] = useState<string | null>(null);
   const [openIssue, setOpenIssue] = useState<string | null>('families');
 
+  const upcomingEvents = [
+    { title: "Official Campaign Launch", date: "Mar 28, 2026", location: "7 South Highway, Lakeland, GA" },
+    { title: "Democratic Party Meet Up", date: "Apr 11, 2026", location: "Atlanta, Georgia" },
+    { title: "Election Day", date: "Nov 03, 2026", location: "District 176" }
+  ];
+
   useEffect(() => {
     getCampaignUpdates().then(setNews);
   }, []);
@@ -298,21 +304,41 @@ export default function App() {
         </motion.div>
       </section>
 
-      {/* Latest News (Grounding) */}
-      {news && (
-        <section className="bg-ga-gold py-4 px-4">
-          <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-center gap-4 text-ga-navy">
-            <div className="flex items-center font-bold uppercase tracking-wider text-sm">
-              <Newspaper size={18} className="mr-2" />
-              Latest Updates:
-            </div>
-            <div className="text-sm font-medium italic text-center md:text-left">
-              {news.split('\n').filter(l => l.trim()).slice(0, 1)[0].replace(/[*#]/g, '')}
-            </div>
-            <a href="#news" className="text-xs font-bold underline hover:text-ga-red">Read More</a>
+      {/* Rolling Events Marquee */}
+      <section className="bg-ga-gold py-3 px-0 border-y border-ga-navy/10 overflow-hidden relative">
+        <div className="flex items-center">
+          <div className="bg-ga-gold z-20 px-6 flex items-center font-bold uppercase tracking-wider text-sm border-r border-ga-navy/10 py-1 shadow-[10px_0_15px_-5px_rgba(0,0,0,0.1)]">
+            <Calendar size={18} className="mr-2 text-ga-red" />
+            Latest Updates:
           </div>
-        </section>
-      )}
+          <div className="flex-1 overflow-hidden">
+            <motion.div 
+              animate={{ x: [0, -1500] }}
+              transition={{ 
+                repeat: Infinity, 
+                duration: 40, 
+                ease: "linear" 
+              }}
+              className="flex whitespace-nowrap gap-12 items-center"
+            >
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="flex gap-12 items-center">
+                  {upcomingEvents.map((event, j) => (
+                    <div key={j} className="flex items-center gap-3">
+                      <span className="font-bold uppercase tracking-tighter text-[10px] bg-ga-navy text-white px-2 py-0.5 rounded">
+                        {event.date}
+                      </span>
+                      <span className="font-bold text-ga-navy uppercase text-xs tracking-wider">{event.title}</span>
+                      <span className="text-ga-navy/60 text-xs font-medium">• {event.location}</span>
+                      <div className="w-1.5 h-1.5 rounded-full bg-ga-red mx-4"></div>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </motion.div>
+          </div>
+        </div>
+      </section>
 
       {/* About Section */}
       <Section id="about" subtitle="Meet Marcus" title="A Lifetime of Service">
@@ -515,7 +541,19 @@ export default function App() {
 
       {/* Events Section */}
       <Section id="events" subtitle="Connect" title="Upcoming Events">
-        <div className="grid md:grid-cols-1 max-w-2xl mx-auto gap-8">
+        <div className="grid md:grid-cols-3 max-w-6xl mx-auto gap-8">
+          <EventCard 
+            title="Official Campaign Launch" 
+            date="Mar 28, 2026" 
+            time="4:30 PM" 
+            location="7 South Highway, Lakeland, GA"
+          />
+          <EventCard 
+            title="Democratic Party Meet Up" 
+            date="Apr 11, 2026" 
+            time="6:00 PM - 8:00 PM" 
+            location="Atlanta, Georgia"
+          />
           <EventCard 
             title="Election Day" 
             date="Nov 03, 2026" 
