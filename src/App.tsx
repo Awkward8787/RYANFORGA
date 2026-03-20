@@ -638,7 +638,7 @@ export default function App() {
       <div className="bg-ga-gold py-8 px-4 text-center border-b border-ga-navy/10">
         <div className="max-w-4xl mx-auto">
           <p className="text-xl md:text-2xl font-bold text-ga-navy">
-            Vote FOR Markus T Ryan for State House election in 2026 district 176 November 3, 2026. A leader we can trust.
+            Vote FOR Marcus Ryan for State House election in 2026 district 176 November 3, 2026. A leader we can trust.
           </p>
         </div>
       </div>
