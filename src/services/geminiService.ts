@@ -6,7 +6,7 @@ export async function getCampaignUpdates() {
   try {
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: "Find the latest news and public announcements regarding Marcus Ryan's 2027 campaign as a Democrat for Georgia State House Representative. Summarize in 3 bullet points for a 'Latest News' section.",
+      contents: "Find the latest news and public announcements regarding Marcus Ryan's 2026 campaign as a Democrat for Georgia State House Representative. Summarize in 3 bullet points for a 'Latest News' section.",
       config: {
         tools: [{ googleSearch: {} }],
       },

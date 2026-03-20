@@ -4,7 +4,7 @@ import {
   Menu, X, Heart, Users, BookOpen, Shield, Briefcase, 
   Building2, Scale, Calendar, MapPin, Mail, Phone, 
   Facebook, Twitter, Instagram, ArrowRight, CheckCircle2,
-  ChevronRight, DollarSign, Newspaper
+  ChevronRight, DollarSign, Newspaper, ChevronDown, Sprout
 } from 'lucide-react';
 import { getCampaignUpdates, getNearbyOffices } from './services/geminiService';
 
@@ -159,6 +159,45 @@ const Navbar = () => {
   );
 };
 
+const AccordionItem = ({ title, icon: Icon, children, isOpen, onClick }: any) => {
+  return (
+    <div className="border-b border-white/10 last:border-none">
+      <button
+        onClick={onClick}
+        className="w-full py-6 flex items-center justify-between text-left hover:text-ga-gold transition-colors group"
+      >
+        <div className="flex flex-row items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center group-hover:bg-ga-gold/20 transition-colors">
+            <Icon size={24} className="text-ga-gold" />
+          </div>
+          <h3 className="text-xl md:text-2xl font-bold">{title}</h3>
+        </div>
+        <motion.div
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <ChevronDown size={24} />
+        </motion.div>
+      </button>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden"
+          >
+            <div className="pb-8 pl-16 text-white/70 leading-relaxed text-lg">
+              {children}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
 const Section = ({ id, title, subtitle, children, className = "", dark = false }: any) => (
   <section id={id} className={`py-20 px-4 sm:px-6 lg:px-8 ${dark ? 'bg-ga-navy text-white' : 'bg-ga-cream'} ${className}`}>
     <div className="max-w-7xl mx-auto">
@@ -208,6 +247,7 @@ export default function App() {
   const [donationAmount, setDonationAmount] = useState<number | string>(25);
   const [customAmount, setCustomAmount] = useState('');
   const [news, setNews] = useState<string | null>(null);
+  const [openIssue, setOpenIssue] = useState<string | null>('families');
 
   useEffect(() => {
     getCampaignUpdates().then(setNews);
@@ -250,8 +290,7 @@ export default function App() {
               <span className="block text-2xl sm:text-3xl md:text-5xl text-white mt-4 tracking-widest">DISTRICT 176</span>
             </h1>
             <p className="text-xl md:text-2xl max-w-3xl mx-auto mb-10 text-white/90 font-light leading-relaxed">
-              Building a stronger, safer, and more prosperous Georgia for every family. 
-              Together, we can secure our future and expand opportunity for all.
+              Real leadership Real results
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <a href="#donate" className="btn-primary px-10 py-4 text-lg w-full sm:w-auto">Donate Now</a>
@@ -306,7 +345,7 @@ export default function App() {
               />
             </div>
             <div className="absolute -bottom-8 -right-8 bg-ga-red text-white p-8 rounded-2xl shadow-xl hidden lg:block">
-              <p className="text-4xl font-display font-black">2027</p>
+              <p className="text-4xl font-display font-black">2026</p>
               <p className="uppercase tracking-widest text-xs font-bold">Election Year</p>
             </div>
           </motion.div>
@@ -316,10 +355,10 @@ export default function App() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
           >
-            <h3 className="text-3xl font-bold mb-6 text-ga-navy">A Democrat Fighting for Georgia's Future</h3>
+            <h3 className="text-3xl font-bold mb-6 text-ga-navy">A Leader Fighting for Georgia's Future</h3>
             <div className="space-y-6 text-ga-navy/80 leading-relaxed text-lg">
               <p>
-                Marcus Ryan is a dedicated Democrat, United States Marine, community leader, and lifelong Georgian. 
+                Marcus Ryan is a United States Marine, community leader, and lifelong Georgian. 
                 Raised with the values of hard work and integrity, Marcus has spent his career building 
                 solutions that work for people, not special interests.
               </p>
@@ -356,37 +395,62 @@ export default function App() {
 
       {/* Issues Section */}
       <Section id="issues" subtitle="The Plan" title="Priorities for Georgia" dark>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <IssueCard 
-            icon={Briefcase} 
-            title="Economic Opportunity" 
-            description="Cutting red tape and supporting job creators to ensure Georgia remains the best state for business and workers alike."
-          />
-          <IssueCard 
-            icon={Shield} 
-            title="Public Safety" 
-            description="Supporting our first responders and investing in community-based safety initiatives to protect every neighborhood."
-          />
-          <IssueCard 
-            icon={BookOpen} 
-            title="Education First" 
-            description="Empowering parents, supporting teachers, and ensuring every student has access to a world-class education."
-          />
-          <IssueCard 
-            icon={Building2} 
-            title="Small Business Growth" 
-            description="Providing the tools and resources local entrepreneurs need to thrive and drive our local economies forward."
-          />
-          <IssueCard 
+        <div className="max-w-4xl mx-auto bg-white/5 rounded-3xl p-4 md:p-8 backdrop-blur-sm border border-white/10">
+          <AccordionItem 
+            title="Families" 
             icon={Users} 
-            title="Community Development" 
-            description="Investing in infrastructure and local projects that enhance the quality of life for all Georgia residents."
-          />
-          <IssueCard 
+            isOpen={openIssue === 'families'} 
+            onClick={() => setOpenIssue(openIssue === 'families' ? null : 'families')}
+          >
+            <p>
+              Supporting Georgia's families by expanding access to affordable childcare, 
+              strengthening community resources, and ensuring every household has the 
+              opportunity to thrive. We believe that strong families are the foundation 
+              of a strong Georgia.
+            </p>
+          </AccordionItem>
+          
+          <AccordionItem 
+            title="Farming and Agriculture" 
+            icon={Sprout} 
+            isOpen={openIssue === 'farming'} 
+            onClick={() => setOpenIssue(openIssue === 'farming' ? null : 'farming')}
+          >
+            <p>
+              Protecting our state's agricultural heritage by supporting local farmers, 
+              investing in sustainable practices, and ensuring Georgia remains a leader 
+              in global food production. We will fight for the resources our rural 
+              communities need to prosper.
+            </p>
+          </AccordionItem>
+          
+          <AccordionItem 
+            title="Fiscal Responsibility" 
             icon={Scale} 
-            title="Accountability" 
-            description="Bringing transparency and fiscal responsibility back to state government to ensure your tax dollars are spent wisely."
-          />
+            isOpen={openIssue === 'fiscal'} 
+            onClick={() => setOpenIssue(openIssue === 'fiscal' ? null : 'fiscal')}
+          >
+            <p>
+              Bringing transparency and accountability to state spending. We will cut 
+              wasteful expenditures and ensure that every tax dollar is invested 
+              wisely in our state's future. Marcus Ryan is committed to a balanced 
+              budget that works for you.
+            </p>
+          </AccordionItem>
+          
+          <AccordionItem 
+            title="Education" 
+            icon={BookOpen} 
+            isOpen={openIssue === 'education'} 
+            onClick={() => setOpenIssue(openIssue === 'education' ? null : 'education')}
+          >
+            <p>
+              Empowering the next generation by investing in our schools, supporting 
+              our teachers, and ensuring every student in District 176 has access to 
+              a world-class education. Education is the key to expanding opportunity 
+              for all Georgians.
+            </p>
+          </AccordionItem>
         </div>
       </Section>
 
@@ -568,8 +632,7 @@ export default function App() {
                 </span>
               </a>
               <p className="text-white/60 max-w-md mb-8 leading-relaxed">
-                Join our movement to build a stronger Georgia. Together, we can create 
-                a future filled with opportunity, safety, and prosperity for every citizen.
+                Real leadership Real results
               </p>
               <div className="flex space-x-4">
                 <a href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-ga-red transition-colors">
