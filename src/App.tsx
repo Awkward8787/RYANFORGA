@@ -371,7 +371,7 @@ export default function App() {
             <h3 className="text-3xl font-bold mb-6 text-ga-navy">A Leader Fighting for Georgia's Future</h3>
             <div className="space-y-6 text-ga-navy/80 leading-relaxed text-lg">
               <p>
-                Marcus Ryan is a United States Marine, community leader, and lifelong Georgian. 
+                Marcus Ryan is a US Marine Veteran, community leader, and lifelong Georgian. 
                 Raised with the values of hard work and integrity, Marcus has spent his career building 
                 solutions that work for people, not special interests.
               </p>
@@ -593,15 +593,22 @@ export default function App() {
             </div>
             
             <div>
-              <label className="block text-sm font-bold mb-4 text-ga-gold uppercase tracking-wider">How would you like to help?</label>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {['Volunteer', 'Yard Sign', 'Events', 'Outreach'].map((opt) => (
-                  <label key={opt} className="flex items-center space-x-3 cursor-pointer group">
-                    <div className="w-6 h-6 border-2 border-white/30 rounded-md flex items-center justify-center group-hover:border-ga-gold transition-colors">
-                      <div className="w-3 h-3 bg-ga-gold rounded-sm opacity-0 group-hover:opacity-20"></div>
-                    </div>
+              <label className="block text-sm font-bold mb-4 text-ga-gold uppercase tracking-wider">Areas of Interest</label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[
+                  'Door Knocking', 
+                  'Phone Banking', 
+                  'Social Media Support', 
+                  'Data Entry', 
+                  'Event Planning', 
+                  'Community Outreach',
+                  'Yard Sign Delivery',
+                  'Fundraising',
+                  'Translation Services'
+                ].map((opt) => (
+                  <label key={opt} className="flex items-center space-x-3 cursor-pointer group bg-white/5 p-3 rounded-xl border border-white/10 hover:border-ga-gold/50 transition-all">
+                    <input type="checkbox" className="w-5 h-5 rounded border-white/20 bg-white/10 text-ga-gold focus:ring-ga-gold focus:ring-offset-ga-navy" />
                     <span className="text-sm font-medium">{opt}</span>
-                    <input type="checkbox" className="hidden" />
                   </label>
                 ))}
               </div>
