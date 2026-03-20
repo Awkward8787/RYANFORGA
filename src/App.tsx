@@ -70,12 +70,12 @@ const PayPalDonateButton = () => {
     const renderButton = () => {
       if ((window as any).paypal && (window as any).paypal.HostedButtons) {
         // Clear container first to avoid duplicate buttons if re-rendered
-        const container = document.getElementById("paypal-container-A5W8E9GDPK5BJ");
+        const container = document.getElementById("paypal-container-PP2Q2GAWFAK86");
         if (container) {
           container.innerHTML = '';
           (window as any).paypal.HostedButtons({
-            hostedButtonId: "A5W8E9GDPK5BJ",
-          }).render("#paypal-container-A5W8E9GDPK5BJ");
+            hostedButtonId: "PP2Q2GAWFAK86",
+          }).render("#paypal-container-PP2Q2GAWFAK86");
         }
       }
     };
@@ -95,7 +95,7 @@ const PayPalDonateButton = () => {
     }
   }, []);
 
-  return <div id="paypal-container-A5W8E9GDPK5BJ" className="flex justify-center min-h-[150px] items-center"></div>;
+  return <div id="paypal-container-PP2Q2GAWFAK86" className="flex justify-center min-h-[150px] items-center"></div>;
 };
 
 const NavItem = ({ link, mobile = false, scrolled, isHomePage, setIsOpen }: { key?: string, link: any, mobile?: boolean, scrolled: boolean, isHomePage: boolean, setIsOpen: (open: boolean) => void }) => {
@@ -622,19 +622,21 @@ const LandingPage = ({ upcomingEvents, news, openIssue, setOpenIssue }: any) => 
 );
 
 const CheckoutPage = () => (
-  <div className="min-h-screen bg-ga-navy flex items-center justify-center p-4 pt-32">
-    <div className="max-w-2xl w-full bg-white rounded-[2.5rem] p-12 text-center shadow-2xl">
-      <h2 className="text-3xl font-display font-black mb-8 text-ga-navy">COMPLETE YOUR DONATION</h2>
-      <div className="bg-ga-cream/50 p-10 rounded-3xl border border-ga-navy/5 mb-8">
+  <div className="min-h-screen bg-ga-navy flex items-center justify-center p-4">
+    <motion.div 
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="max-w-lg w-full bg-white rounded-[3rem] shadow-[0_30px_100px_rgba(0,0,0,0.5)] p-10 lg:p-16 flex flex-col items-center justify-center"
+    >
+      <div className="w-full">
         <PayPalDonateButton />
       </div>
-      <p className="text-sm text-ga-navy/60 mb-8">
-        Thank you for supporting Marcus Ryan. Your contribution makes a real difference.
-      </p>
-      <Link to="/donate" className="text-ga-red hover:text-ga-navy font-bold flex items-center justify-center gap-2 transition-colors uppercase tracking-widest text-xs">
-        <ArrowRight className="rotate-180" size={16} /> Back to Information
-      </Link>
-    </div>
+      
+      <div className="mt-10 flex items-center justify-center gap-6 text-[10px] font-bold uppercase tracking-widest text-ga-navy/20">
+        <span className="flex items-center"><Shield size={12} className="mr-1.5" /> Secure Checkout</span>
+        <span className="flex items-center"><CheckCircle2 size={12} className="mr-1.5" /> Verified</span>
+      </div>
+    </motion.div>
   </div>
 );
 
