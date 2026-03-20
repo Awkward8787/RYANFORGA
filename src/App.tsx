@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import { 
   Menu, X, Heart, Users, BookOpen, Shield, Briefcase, 
   Building2, Scale, Calendar, MapPin, Mail, Phone, 
@@ -64,9 +65,56 @@ const OfficeFinder = () => {
   );
 };
 
+const PayPalDonateButton = () => {
+  useEffect(() => {
+    const renderButton = () => {
+      if ((window as any).paypal && (window as any).paypal.HostedButtons) {
+        // Clear container first to avoid duplicate buttons if re-rendered
+        const container = document.getElementById("paypal-container-A5W8E9GDPK5BJ");
+        if (container) {
+          container.innerHTML = '';
+          (window as any).paypal.HostedButtons({
+            hostedButtonId: "A5W8E9GDPK5BJ",
+          }).render("#paypal-container-A5W8E9GDPK5BJ");
+        }
+      }
+    };
+
+    // Check if paypal is already loaded
+    if ((window as any).paypal) {
+      renderButton();
+    } else {
+      // If not, wait for it to load
+      const interval = setInterval(() => {
+        if ((window as any).paypal) {
+          renderButton();
+          clearInterval(interval);
+        }
+      }, 500);
+      return () => clearInterval(interval);
+    }
+  }, []);
+
+  return <div id="paypal-container-A5W8E9GDPK5BJ" className="flex justify-center min-h-[150px] items-center"></div>;
+};
+
+const NavItem = ({ link, mobile = false, scrolled, isHomePage, setIsOpen }: { key?: string, link: any, mobile?: boolean, scrolled: boolean, isHomePage: boolean, setIsOpen: (open: boolean) => void }) => {
+  const className = mobile 
+    ? "block px-3 py-4 text-base font-semibold text-ga-navy hover:bg-ga-navy/5 rounded-lg"
+    : `font-semibold hover:text-ga-red transition-colors ${scrolled ? 'text-ga-navy' : 'text-white'}`;
+
+  if (link.href.startsWith('#') || (link.href.startsWith('/#') && isHomePage)) {
+    const href = link.href.startsWith('/#') ? link.href.substring(1) : link.href;
+    return <a href={href} onClick={() => mobile && setIsOpen(false)} className={className}>{link.name}</a>;
+  }
+  return <Link to={link.href} onClick={() => mobile && setIsOpen(false)} className={className}>{link.name}</Link>;
+};
+
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -75,46 +123,46 @@ const Navbar = () => {
   }, []);
 
   const navLinks = [
-    { name: 'About', href: '#about' },
-    { name: 'Issues', href: '#issues' },
-    { name: 'Events', href: '#events' },
-    { name: 'Volunteer', href: '#volunteer' },
+    { name: 'About', href: isHomePage ? '#about' : '/#about' },
+    { name: 'Issues', href: isHomePage ? '#issues' : '/#issues' },
+    { name: 'Events', href: isHomePage ? '#events' : '/#events' },
+    { name: 'Volunteer', href: isHomePage ? '#volunteer' : '/#volunteer' },
   ];
 
   return (
-    <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'glass-nav py-3' : 'bg-transparent py-5'}`}>
+    <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled || !isHomePage ? 'glass-nav py-3' : 'bg-transparent py-5'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
           <div className="flex items-center">
-            <a href="#" className="flex flex-col">
-              <span className={`text-2xl font-display font-black tracking-tighter ${scrolled ? 'text-ga-navy' : 'text-white'}`}>
+            <Link to="/" className="flex flex-col">
+              <span className={`text-2xl font-display font-black tracking-tighter ${scrolled || !isHomePage ? 'text-ga-navy' : 'text-white'}`}>
                 RYAN<span className="text-ga-red">FOR</span>GA
               </span>
-              <span className={`text-[10px] uppercase tracking-widest sm:tracking-[0.2em] font-bold ${scrolled ? 'text-ga-navy/60' : 'text-white/80'}`}>
+              <span className={`text-[10px] uppercase tracking-widest sm:tracking-[0.2em] font-bold ${scrolled || !isHomePage ? 'text-ga-navy/60' : 'text-white/80'}`}>
                 For State House • District 176
               </span>
-            </a>
+            </Link>
           </div>
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center space-x-8">
             {navLinks.map((link) => (
-              <a 
+              <NavItem 
                 key={link.name} 
-                href={link.href} 
-                className={`font-semibold hover:text-ga-red transition-colors ${scrolled ? 'text-ga-navy' : 'text-white'}`}
-              >
-                {link.name}
-              </a>
+                link={link} 
+                scrolled={scrolled} 
+                isHomePage={isHomePage} 
+                setIsOpen={setIsOpen} 
+              />
             ))}
-            <a href="#donate" className="btn-primary">Donate</a>
+            <Link to="/donate" className="btn-primary">Donate</Link>
           </div>
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center">
             <button 
               onClick={() => setIsOpen(!isOpen)} 
-              className={`${scrolled ? 'text-ga-navy' : 'text-white'} p-2`}
+              className={`${scrolled || !isHomePage ? 'text-ga-navy' : 'text-white'} p-2`}
             >
               {isOpen ? <X size={28} /> : <Menu size={28} />}
             </button>
@@ -133,23 +181,23 @@ const Navbar = () => {
           >
             <div className="px-4 pt-2 pb-6 space-y-1">
               {navLinks.map((link) => (
-                <a 
+                <NavItem 
                   key={link.name} 
-                  href={link.href} 
-                  onClick={() => setIsOpen(false)}
-                  className="block px-3 py-4 text-base font-semibold text-ga-navy hover:bg-ga-navy/5 rounded-lg"
-                >
-                  {link.name}
-                </a>
+                  link={link} 
+                  mobile 
+                  scrolled={scrolled} 
+                  isHomePage={isHomePage} 
+                  setIsOpen={setIsOpen} 
+                />
               ))}
               <div className="pt-4">
-                <a 
-                  href="#donate" 
+                <Link 
+                  to="/donate" 
                   onClick={() => setIsOpen(false)}
                   className="block w-full text-center btn-primary"
                 >
                   Donate Now
-                </a>
+                </Link>
               </div>
             </div>
           </motion.div>
@@ -230,11 +278,436 @@ const EventCard = ({ title, date, time, location, rsvpLink }: any) => (
 
 // --- Main App ---
 
+const LandingPage = ({ upcomingEvents, news, openIssue, setOpenIssue }: any) => (
+  <>
+    {/* Hero Section */}
+    <section className="relative h-screen flex items-center justify-center overflow-hidden">
+      {/* Background Image Placeholder */}
+      <div className="absolute inset-0 z-0">
+        <img 
+          src="https://res.cloudinary.com/dkolptikx/image/upload/v1772765601/Georgia-state-capitol-scaled_coc8io.avif" 
+          alt="Georgia State Capitol" 
+          className="w-full h-full object-cover"
+          referrerPolicy="no-referrer"
+        />
+        <div className="absolute inset-0 bg-ga-navy/70 mix-blend-multiply"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-ga-navy via-transparent to-transparent"></div>
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <p className="uppercase tracking-[0.4em] font-bold text-ga-gold mb-4">Leadership. Action. Results.</p>
+          <h1 className="text-4xl sm:text-6xl md:text-8xl font-display font-black mb-6 leading-tight">
+            MARCUS RYAN <br />
+            <span className="text-ga-red block sm:inline">FOR STATE HOUSE</span>
+            <span className="block text-2xl sm:text-3xl md:text-5xl text-white mt-4 tracking-widest">DISTRICT 176</span>
+          </h1>
+          <p className="text-xl md:text-2xl max-w-3xl mx-auto mb-10 text-white/90 font-light leading-relaxed">
+            Real leadership Real results
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link to="/donate" className="btn-primary px-10 py-4 text-lg w-full sm:w-auto whitespace-nowrap">Donate Now</Link>
+            <a href="#volunteer" className="btn-secondary px-10 py-4 text-lg w-full sm:w-auto whitespace-nowrap">Volunteer</a>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Scroll Indicator */}
+      <motion.div 
+        animate={{ y: [0, 10, 0] }}
+        transition={{ repeat: Infinity, duration: 2 }}
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white/50"
+      >
+        <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center p-1">
+          <div className="w-1 h-2 bg-white/50 rounded-full"></div>
+        </div>
+      </motion.div>
+    </section>
+
+    {/* Rolling Events Marquee */}
+    <section className="bg-ga-gold py-3 px-0 border-y border-ga-navy/10 overflow-hidden relative">
+      <div className="flex items-center">
+        <div className="bg-ga-gold z-20 px-6 flex items-center font-bold uppercase tracking-wider text-sm border-r border-ga-navy/10 py-1 shadow-[10px_0_15px_-5px_rgba(0,0,0,0.1)]">
+          <Calendar size={18} className="mr-2 text-ga-red" />
+          Latest Updates:
+        </div>
+        <div className="flex-1 overflow-hidden">
+          <motion.div 
+            animate={{ x: [0, -1500] }}
+            transition={{ 
+              repeat: Infinity, 
+              duration: 40, 
+              ease: "linear" 
+            }}
+            className="flex whitespace-nowrap gap-12 items-center"
+          >
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="flex gap-12 items-center">
+                {upcomingEvents.map((event: any, j: number) => (
+                  <div key={j} className="flex items-center gap-3">
+                    <span className="font-bold uppercase tracking-tighter text-[10px] bg-ga-navy text-white px-2 py-0.5 rounded">
+                      {event.date}
+                    </span>
+                    <span className="font-bold text-ga-navy uppercase text-xs tracking-wider">{event.title}</span>
+                    <span className="text-ga-navy/60 text-xs font-medium">• {event.location}</span>
+                    <div className="w-1.5 h-1.5 rounded-full bg-ga-red mx-4"></div>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </motion.div>
+        </div>
+      </div>
+    </section>
+
+    {/* About Section */}
+    <Section id="about" subtitle="Meet Marcus" title="A Lifetime of Service">
+      <div className="grid md:grid-cols-2 gap-16 items-center">
+        <motion.div 
+          initial={{ opacity: 0, x: -50 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          className="relative"
+        >
+          <div className="aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl">
+            <img 
+              src="https://www.dropbox.com/scl/fi/9lp9hzqq5wp05bweo4km3/MarcusT.Ryan.png?rlkey=avd5m0741opf5bb0mt5jbisvq&st=5wlljzps&raw=1" 
+              alt="Marcus Ryan" 
+              className="w-full h-full object-cover"
+              referrerPolicy="no-referrer"
+            />
+          </div>
+          <div className="absolute -bottom-8 -right-8 bg-ga-red text-white p-8 rounded-2xl shadow-xl hidden lg:block">
+            <p className="text-4xl font-display font-black">2026</p>
+            <p className="uppercase tracking-widest text-xs font-bold">Election Year</p>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, x: 50 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+        >
+          <h3 className="text-3xl font-bold mb-6 text-ga-navy">A Leader Fighting for Georgia's Future</h3>
+          <div className="space-y-6 text-ga-navy/80 leading-relaxed text-lg">
+            <p>
+              Marcus Ryan is a US Marine Veteran, community leader, and lifelong Georgian. 
+              Raised with the values of hard work and integrity, Marcus has spent his career building 
+              solutions that work for people, not special interests.
+            </p>
+            <p>
+              With a background in community development and economic strategy, Marcus understands 
+              the challenges facing our state. He's running for Georgia State House, District 176 to ensure 
+              that every family has a seat at the table and every child has a path to success.
+            </p>
+            <div className="pt-4 grid grid-cols-2 gap-6">
+              <div className="flex items-start">
+                <CheckCircle2 className="text-ga-red mr-3 mt-1" size={20} />
+                <div>
+                  <p className="font-bold">Local Roots</p>
+                  <p className="text-sm">Born and raised in Georgia</p>
+                </div>
+              </div>
+              <div className="flex items-start">
+                <CheckCircle2 className="text-ga-red mr-3 mt-1" size={20} />
+                <div>
+                  <p className="font-bold">US Marine Veteran</p>
+                  <p className="text-sm">Served with honor and distinction</p>
+                </div>
+              </div>
+            </div>
+            <div className="pt-8">
+              <a href="#volunteer" className="btn-secondary inline-flex items-center">
+                Join the Campaign <ArrowRight className="ml-2" size={18} />
+              </a>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </Section>
+
+    {/* Issues Section */}
+    <Section id="issues" subtitle="The Plan" title="Priorities for Georgia" dark>
+      <div className="max-w-4xl mx-auto bg-white/5 rounded-3xl p-4 md:p-8 backdrop-blur-sm border border-white/10">
+        <AccordionItem 
+          title="Families" 
+          icon={Users} 
+          isOpen={openIssue === 'families'} 
+          onClick={() => setOpenIssue(openIssue === 'families' ? null : 'families')}
+        >
+          <p>
+            Supporting Georgia's families by expanding access to affordable childcare, 
+            strengthening community resources, and ensuring every household has the 
+            opportunity to thrive. We believe that strong families are the foundation 
+            of a strong Georgia.
+          </p>
+        </AccordionItem>
+        
+        <AccordionItem 
+          title="Farming and Agriculture" 
+          icon={Sprout} 
+          isOpen={openIssue === 'farming'} 
+          onClick={() => setOpenIssue(openIssue === 'farming' ? null : 'farming')}
+        >
+          <p>
+            Protecting our state's agricultural heritage by supporting local farmers, 
+            investing in sustainable practices, and ensuring Georgia remains a leader 
+            in global food production. We will fight for the resources our rural 
+            communities need to prosper.
+          </p>
+        </AccordionItem>
+        
+        <AccordionItem 
+          title="Fiscal Responsibility" 
+          icon={Scale} 
+          isOpen={openIssue === 'fiscal'} 
+          onClick={() => setOpenIssue(openIssue === 'fiscal' ? null : 'fiscal')}
+        >
+          <p>
+            Bringing transparency and accountability to state spending. We will cut 
+            wasteful expenditures and ensure that every tax dollar is invested 
+            wisely in our state's future. Marcus Ryan is committed to a balanced 
+            budget that works for you.
+          </p>
+        </AccordionItem>
+        
+        <AccordionItem 
+          title="Education" 
+          icon={BookOpen} 
+          isOpen={openIssue === 'education'} 
+          onClick={() => setOpenIssue(openIssue === 'education' ? null : 'education')}
+        >
+          <p>
+            Empowering the next generation by investing in our schools, supporting 
+            our teachers, and ensuring every student in District 176 has access to 
+            a world-class education. Education is the key to expanding opportunity 
+            for all Georgians.
+          </p>
+        </AccordionItem>
+      </div>
+    </Section>
+
+    {/* Donation CTA Section */}
+    <Section id="donate-cta" subtitle="Support" title="Fuel the Movement">
+      <div className="max-w-4xl mx-auto bg-ga-navy text-white rounded-3xl p-12 text-center shadow-2xl">
+        <h3 className="text-3xl font-bold mb-6">Your Support Matters</h3>
+        <p className="text-white/70 mb-10 text-lg max-w-2xl mx-auto">
+          Every contribution, no matter the size, helps us reach more voters and share our vision for a better Georgia.
+        </p>
+        <Link to="/donate" className="btn-primary px-12 py-5 text-xl !bg-ga-gold !text-ga-navy hover:!bg-white whitespace-nowrap">
+          Donate Now
+        </Link>
+        <div className="mt-12 flex flex-wrap justify-center gap-8 text-sm font-medium text-ga-gold/80">
+          <div className="flex items-center"><CheckCircle2 size={18} className="mr-2" /> 100% Local Grassroots</div>
+          <div className="flex items-center"><CheckCircle2 size={18} className="mr-2" /> Secure Processing</div>
+        </div>
+      </div>
+    </Section>
+
+    {/* Events Section */}
+    <Section id="events" subtitle="Connect" title="Upcoming Events">
+      <div className="grid md:grid-cols-3 max-w-6xl mx-auto gap-8">
+        <EventCard 
+          title="Official Campaign Launch" 
+          date="Mar 28, 2026" 
+          time="4:30 PM" 
+          location="7 South Highway, Lakeland, GA"
+        />
+        <EventCard 
+          title="Democratic Party Meet Up" 
+          date="Apr 11, 2026" 
+          time="6:00 PM - 8:00 PM" 
+          location="Atlanta, Georgia"
+        />
+        <EventCard 
+          title="Election Day" 
+          date="Nov 03, 2026" 
+          time="7:00 AM - 7:00 PM" 
+          location="Your Local Polling Place, District 176"
+        />
+      </div>
+      <OfficeFinder />
+      <div className="mt-12 text-center">
+        <button className="btn-outline">View All Events</button>
+      </div>
+    </Section>
+
+    {/* Volunteer Section */}
+    <Section id="volunteer" subtitle="Get Involved" title="Join the Team" className="bg-ga-navy text-white">
+      <div className="max-w-3xl mx-auto">
+        <form className="space-y-6">
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-bold mb-2 text-ga-gold uppercase tracking-wider">Full Name</label>
+              <input type="text" className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 outline-none focus:border-ga-gold transition-colors" placeholder="John Doe" />
+            </div>
+            <div>
+              <label className="block text-sm font-bold mb-2 text-ga-gold uppercase tracking-wider">Email Address</label>
+              <input type="email" className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 outline-none focus:border-ga-gold transition-colors" placeholder="john@example.com" />
+            </div>
+          </div>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-bold mb-2 text-ga-gold uppercase tracking-wider">Phone Number</label>
+              <input type="tel" className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 outline-none focus:border-ga-gold transition-colors" placeholder="(404) 555-0123" />
+            </div>
+            <div>
+              <label className="block text-sm font-bold mb-2 text-ga-gold uppercase tracking-wider">City</label>
+              <input type="text" className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 outline-none focus:border-ga-gold transition-colors" placeholder="Atlanta" />
+            </div>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-bold mb-4 text-ga-gold uppercase tracking-wider">Areas of Interest</label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[
+                'Door Knocking', 
+                'Phone Banking', 
+                'Social Media Support', 
+                'Data Entry', 
+                'Event Planning', 
+                'Community Outreach',
+                'Yard Sign Delivery',
+                'Fundraising',
+                'Translation Services'
+              ].map((opt) => (
+                <label key={opt} className="flex items-center space-x-3 cursor-pointer group bg-white/5 p-3 rounded-xl border border-white/10 hover:border-ga-gold/50 transition-all">
+                  <input type="checkbox" className="w-5 h-5 rounded border-white/20 bg-white/10 text-ga-gold focus:ring-ga-gold focus:ring-offset-ga-navy" />
+                  <span className="text-sm font-medium">{opt}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-bold mb-2 text-ga-gold uppercase tracking-wider">Message (Optional)</label>
+            <textarea rows={4} className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 outline-none focus:border-ga-gold transition-colors" placeholder="Tell us why you're joining..."></textarea>
+          </div>
+
+          <button type="submit" className="btn-primary w-full py-4 text-lg !bg-ga-gold !text-ga-navy hover:!bg-white">
+            Sign Up to Volunteer
+          </button>
+        </form>
+      </div>
+    </Section>
+
+    {/* Testimonial Strip */}
+    <div className="bg-ga-red py-12 px-4 overflow-hidden relative">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-around gap-8 text-white">
+        <div className="text-center md:text-left max-w-sm">
+          <p className="italic text-xl mb-2">"Marcus Ryan is exactly the kind of leader Georgia needs—principled, hardworking, and focused on results."</p>
+          <p className="font-bold uppercase tracking-widest text-xs">— Sarah J., Small Business Owner</p>
+        </div>
+        <div className="h-12 w-px bg-white/20 hidden md:block"></div>
+        <div className="text-center md:text-left max-w-sm">
+          <p className="italic text-xl mb-2">"I've seen Marcus in action. He doesn't just talk about problems; he rolls up his sleeves and fixes them."</p>
+          <p className="font-bold uppercase tracking-widest text-xs">— David M., Community Leader</p>
+        </div>
+      </div>
+    </div>
+
+    {/* Voting Reminder Strip */}
+    <div className="bg-ga-gold py-8 px-4 text-center border-b border-ga-navy/10">
+      <div className="max-w-4xl mx-auto">
+        <p className="text-xl md:text-2xl font-bold text-ga-navy">
+          Vote FOR Marcus Ryan for State House election in 2026 district 176 November 3, 2026. A leader we can trust.
+        </p>
+      </div>
+    </div>
+  </>
+);
+
+const CheckoutPage = () => (
+  <div className="min-h-screen bg-ga-navy flex items-center justify-center p-4 pt-32">
+    <div className="max-w-2xl w-full bg-white rounded-[2.5rem] p-12 text-center shadow-2xl">
+      <h2 className="text-3xl font-display font-black mb-8 text-ga-navy">COMPLETE YOUR DONATION</h2>
+      <div className="bg-ga-cream/50 p-10 rounded-3xl border border-ga-navy/5 mb-8">
+        <PayPalDonateButton />
+      </div>
+      <p className="text-sm text-ga-navy/60 mb-8">
+        Thank you for supporting Marcus Ryan. Your contribution makes a real difference.
+      </p>
+      <Link to="/donate" className="text-ga-red hover:text-ga-navy font-bold flex items-center justify-center gap-2 transition-colors uppercase tracking-widest text-xs">
+        <ArrowRight className="rotate-180" size={16} /> Back to Information
+      </Link>
+    </div>
+  </div>
+);
+
+const DonatePage = () => (
+  <div className="min-h-screen bg-ga-navy pt-32 pb-20 px-4 flex items-center justify-center">
+    <div className="max-w-6xl w-full mx-auto">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="bg-white rounded-[3rem] shadow-[0_30px_100px_rgba(0,0,0,0.5)] overflow-hidden border border-white/10"
+      >
+        <div className="flex flex-col lg:flex-row min-h-[600px]">
+          {/* Left Side: Info */}
+          <div className="lg:w-1/2 p-12 lg:p-20 bg-ga-navy text-white flex flex-col justify-center relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-ga-red/10 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+            <div className="relative z-10">
+              <h2 className="text-3xl sm:text-5xl lg:text-7xl font-display font-black mb-8 leading-[0.9] tracking-tighter whitespace-nowrap">
+                INVEST IN <span className="text-ga-gold">OUR FUTURE</span>
+              </h2>
+              <div className="h-2 w-24 bg-ga-red rounded-full mb-10"></div>
+              <p className="text-xl text-white/70 mb-12 leading-relaxed max-w-md">
+                Your contribution fuels the grassroots movement to bring real leadership and results to District 176.
+              </p>
+              <div className="flex flex-row flex-wrap gap-8 text-sm font-bold uppercase tracking-widest text-ga-gold/80">
+                <span className="flex items-center whitespace-nowrap"><CheckCircle2 size={20} className="mr-3 text-ga-red" /> Secure</span>
+                <span className="flex items-center whitespace-nowrap"><CheckCircle2 size={20} className="mr-3 text-ga-red" /> Local</span>
+                <span className="flex items-center whitespace-nowrap"><CheckCircle2 size={20} className="mr-3 text-ga-red" /> Direct</span>
+              </div>
+            </div>
+          </div>
+          
+          {/* Right Side: Action */}
+          <div className="lg:w-1/2 p-12 lg:p-20 flex flex-col justify-center items-center bg-ga-cream/20 text-center">
+            <h3 className="text-3xl font-bold text-ga-navy mb-4">Ready to contribute?</h3>
+            <p className="text-ga-navy/60 mb-10 max-w-sm">
+              Click the button below to proceed to our secure PayPal checkout page.
+            </p>
+            
+            <Link 
+              to="/donate/checkout" 
+              className="btn-primary px-16 py-6 text-2xl !bg-ga-red !text-white hover:!bg-ga-navy flex items-center gap-4 group whitespace-nowrap"
+            >
+              <span>Donate Now</span>
+              <ArrowRight className="group-hover:translate-x-2 transition-transform" />
+            </Link>
+            
+            <div className="mt-12 space-y-4">
+              <p className="text-[10px] text-ga-navy/40 leading-tight italic max-w-xs mx-auto">
+                Paid for by Marcus Ryan for Georgia. Contributions are not tax deductible for federal income tax purposes.
+              </p>
+              <div className="flex justify-center gap-4 opacity-30 grayscale">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-6" />
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-4" />
+                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-6" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+      
+      <div className="mt-12 text-center">
+        <Link to="/" className="text-white/60 hover:text-ga-gold font-bold flex items-center justify-center gap-2 transition-colors uppercase tracking-widest text-xs whitespace-nowrap">
+          <ArrowRight className="rotate-180" size={16} /> Back to Home
+        </Link>
+      </div>
+    </div>
+  </div>
+);
+
 export default function App() {
-  const [donationAmount, setDonationAmount] = useState<number | string>(25);
-  const [customAmount, setCustomAmount] = useState('');
   const [news, setNews] = useState<string | null>(null);
   const [openIssue, setOpenIssue] = useState<string | null>('families');
+  const location = useLocation();
 
   const upcomingEvents = [
     { title: "Official Campaign Launch", date: "Mar 28, 2026", location: "7 South Highway, Lakeland, GA" },
@@ -246,423 +719,41 @@ export default function App() {
     getCampaignUpdates().then(setNews);
   }, []);
 
-  const handleDonation = (e: React.FormEvent) => {
-    e.preventDefault();
-    const amount = customAmount || donationAmount;
-    window.open(`https://secure.actblue.com/donate/placeholder-ryan-ga?amount=${amount}`, '_blank');
-  };
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   return (
     <div className="min-h-screen">
       <Navbar />
 
-      {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        {/* Background Image Placeholder */}
-        <div className="absolute inset-0 z-0">
-          <img 
-            src="https://res.cloudinary.com/dkolptikx/image/upload/v1772765601/Georgia-state-capitol-scaled_coc8io.avif" 
-            alt="Georgia State Capitol" 
-            className="w-full h-full object-cover"
-            referrerPolicy="no-referrer"
+      <Routes>
+        <Route path="/" element={
+          <LandingPage 
+            upcomingEvents={upcomingEvents} 
+            news={news} 
+            openIssue={openIssue} 
+            setOpenIssue={setOpenIssue} 
           />
-          <div className="absolute inset-0 bg-ga-navy/70 mix-blend-multiply"></div>
-          <div className="absolute inset-0 bg-gradient-to-t from-ga-navy via-transparent to-transparent"></div>
-        </div>
-
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <p className="uppercase tracking-[0.4em] font-bold text-ga-gold mb-4">Leadership. Action. Results.</p>
-            <h1 className="text-4xl sm:text-6xl md:text-8xl font-display font-black mb-6 leading-tight">
-              MARCUS RYAN <br />
-              <span className="text-ga-red block sm:inline">FOR STATE HOUSE</span>
-              <span className="block text-2xl sm:text-3xl md:text-5xl text-white mt-4 tracking-widest">DISTRICT 176</span>
-            </h1>
-            <p className="text-xl md:text-2xl max-w-3xl mx-auto mb-10 text-white/90 font-light leading-relaxed">
-              Real leadership Real results
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <a href="#donate" className="btn-primary px-10 py-4 text-lg w-full sm:w-auto">Donate Now</a>
-              <a href="#volunteer" className="btn-secondary px-10 py-4 text-lg w-full sm:w-auto">Volunteer</a>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Scroll Indicator */}
-        <motion.div 
-          animate={{ y: [0, 10, 0] }}
-          transition={{ repeat: Infinity, duration: 2 }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white/50"
-        >
-          <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center p-1">
-            <div className="w-1 h-2 bg-white/50 rounded-full"></div>
-          </div>
-        </motion.div>
-      </section>
-
-      {/* Rolling Events Marquee */}
-      <section className="bg-ga-gold py-3 px-0 border-y border-ga-navy/10 overflow-hidden relative">
-        <div className="flex items-center">
-          <div className="bg-ga-gold z-20 px-6 flex items-center font-bold uppercase tracking-wider text-sm border-r border-ga-navy/10 py-1 shadow-[10px_0_15px_-5px_rgba(0,0,0,0.1)]">
-            <Calendar size={18} className="mr-2 text-ga-red" />
-            Latest Updates:
-          </div>
-          <div className="flex-1 overflow-hidden">
-            <motion.div 
-              animate={{ x: [0, -1500] }}
-              transition={{ 
-                repeat: Infinity, 
-                duration: 40, 
-                ease: "linear" 
-              }}
-              className="flex whitespace-nowrap gap-12 items-center"
-            >
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="flex gap-12 items-center">
-                  {upcomingEvents.map((event, j) => (
-                    <div key={j} className="flex items-center gap-3">
-                      <span className="font-bold uppercase tracking-tighter text-[10px] bg-ga-navy text-white px-2 py-0.5 rounded">
-                        {event.date}
-                      </span>
-                      <span className="font-bold text-ga-navy uppercase text-xs tracking-wider">{event.title}</span>
-                      <span className="text-ga-navy/60 text-xs font-medium">• {event.location}</span>
-                      <div className="w-1.5 h-1.5 rounded-full bg-ga-red mx-4"></div>
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* About Section */}
-      <Section id="about" subtitle="Meet Marcus" title="A Lifetime of Service">
-        <div className="grid md:grid-cols-2 gap-16 items-center">
-          <motion.div 
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="relative"
-          >
-            <div className="aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl">
-              <img 
-                src="https://www.dropbox.com/scl/fi/9lp9hzqq5wp05bweo4km3/MarcusT.Ryan.png?rlkey=avd5m0741opf5bb0mt5jbisvq&st=5wlljzps&raw=1" 
-                alt="Marcus Ryan" 
-                className="w-full h-full object-cover"
-                referrerPolicy="no-referrer"
-              />
-            </div>
-            <div className="absolute -bottom-8 -right-8 bg-ga-red text-white p-8 rounded-2xl shadow-xl hidden lg:block">
-              <p className="text-4xl font-display font-black">2026</p>
-              <p className="uppercase tracking-widest text-xs font-bold">Election Year</p>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-          >
-            <h3 className="text-3xl font-bold mb-6 text-ga-navy">A Leader Fighting for Georgia's Future</h3>
-            <div className="space-y-6 text-ga-navy/80 leading-relaxed text-lg">
-              <p>
-                Marcus Ryan is a US Marine Veteran, community leader, and lifelong Georgian. 
-                Raised with the values of hard work and integrity, Marcus has spent his career building 
-                solutions that work for people, not special interests.
-              </p>
-              <p>
-                With a background in community development and economic strategy, Marcus understands 
-                the challenges facing our state. He's running for Georgia State House, District 176 to ensure 
-                that every family has a seat at the table and every child has a path to success.
-              </p>
-              <div className="pt-4 grid grid-cols-2 gap-6">
-                <div className="flex items-start">
-                  <CheckCircle2 className="text-ga-red mr-3 mt-1" size={20} />
-                  <div>
-                    <p className="font-bold">Local Roots</p>
-                    <p className="text-sm">Born and raised in Georgia</p>
-                  </div>
-                </div>
-                <div className="flex items-start">
-                  <CheckCircle2 className="text-ga-red mr-3 mt-1" size={20} />
-                  <div>
-                    <p className="font-bold">US Marine Veteran</p>
-                    <p className="text-sm">Served with honor and distinction</p>
-                  </div>
-                </div>
-              </div>
-              <div className="pt-8">
-                <a href="#volunteer" className="btn-secondary inline-flex items-center">
-                  Join the Campaign <ArrowRight className="ml-2" size={18} />
-                </a>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </Section>
-
-      {/* Issues Section */}
-      <Section id="issues" subtitle="The Plan" title="Priorities for Georgia" dark>
-        <div className="max-w-4xl mx-auto bg-white/5 rounded-3xl p-4 md:p-8 backdrop-blur-sm border border-white/10">
-          <AccordionItem 
-            title="Families" 
-            icon={Users} 
-            isOpen={openIssue === 'families'} 
-            onClick={() => setOpenIssue(openIssue === 'families' ? null : 'families')}
-          >
-            <p>
-              Supporting Georgia's families by expanding access to affordable childcare, 
-              strengthening community resources, and ensuring every household has the 
-              opportunity to thrive. We believe that strong families are the foundation 
-              of a strong Georgia.
-            </p>
-          </AccordionItem>
-          
-          <AccordionItem 
-            title="Farming and Agriculture" 
-            icon={Sprout} 
-            isOpen={openIssue === 'farming'} 
-            onClick={() => setOpenIssue(openIssue === 'farming' ? null : 'farming')}
-          >
-            <p>
-              Protecting our state's agricultural heritage by supporting local farmers, 
-              investing in sustainable practices, and ensuring Georgia remains a leader 
-              in global food production. We will fight for the resources our rural 
-              communities need to prosper.
-            </p>
-          </AccordionItem>
-          
-          <AccordionItem 
-            title="Fiscal Responsibility" 
-            icon={Scale} 
-            isOpen={openIssue === 'fiscal'} 
-            onClick={() => setOpenIssue(openIssue === 'fiscal' ? null : 'fiscal')}
-          >
-            <p>
-              Bringing transparency and accountability to state spending. We will cut 
-              wasteful expenditures and ensure that every tax dollar is invested 
-              wisely in our state's future. Marcus Ryan is committed to a balanced 
-              budget that works for you.
-            </p>
-          </AccordionItem>
-          
-          <AccordionItem 
-            title="Education" 
-            icon={BookOpen} 
-            isOpen={openIssue === 'education'} 
-            onClick={() => setOpenIssue(openIssue === 'education' ? null : 'education')}
-          >
-            <p>
-              Empowering the next generation by investing in our schools, supporting 
-              our teachers, and ensuring every student in District 176 has access to 
-              a world-class education. Education is the key to expanding opportunity 
-              for all Georgians.
-            </p>
-          </AccordionItem>
-        </div>
-      </Section>
-
-      {/* Donation Section */}
-      <Section id="donate" subtitle="Support" title="Fuel the Movement">
-        <div className="max-w-4xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden border border-ga-navy/5">
-          <div className="grid md:grid-cols-2">
-            <div className="p-10 bg-ga-navy text-white flex flex-col justify-center">
-              <h3 className="text-3xl font-bold mb-4">Your Support Matters</h3>
-              <p className="text-white/70 mb-8">
-                Every contribution, no matter the size, helps us reach more voters and share our vision for a better Georgia.
-              </p>
-              <div className="space-y-4">
-                <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-full bg-ga-gold/20 flex items-center justify-center mr-4 text-ga-gold">
-                    <CheckCircle2 size={20} />
-                  </div>
-                  <p className="text-sm font-medium">100% Local Grassroots Funding</p>
-                </div>
-                <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-full bg-ga-gold/20 flex items-center justify-center mr-4 text-ga-gold">
-                    <CheckCircle2 size={20} />
-                  </div>
-                  <p className="text-sm font-medium">Secure & Transparent Processing</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="p-10">
-              <form onSubmit={handleDonation}>
-                <div className="grid grid-cols-3 gap-3 mb-6">
-                  {[10, 25, 50, 100, 250, 500].map((amount) => (
-                    <button
-                      key={amount}
-                      type="button"
-                      onClick={() => { setDonationAmount(amount); setCustomAmount(''); }}
-                      className={`py-3 rounded-xl font-bold transition-all border-2 ${
-                        donationAmount === amount && !customAmount 
-                          ? 'bg-ga-red border-ga-red text-white shadow-lg' 
-                          : 'border-ga-navy/10 text-ga-navy hover:border-ga-red/50'
-                      }`}
-                    >
-                      ${amount}
-                    </button>
-                  ))}
-                </div>
-                
-                <div className="relative mb-8">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-ga-navy/40">
-                    <DollarSign size={20} />
-                  </div>
-                  <input
-                    type="number"
-                    placeholder="Custom Amount"
-                    value={customAmount}
-                    onChange={(e) => setCustomAmount(e.target.value)}
-                    className="w-full pl-12 pr-4 py-4 bg-ga-navy/5 border-none rounded-xl focus:ring-2 focus:ring-ga-red outline-none font-bold text-ga-navy"
-                  />
-                </div>
-
-                <button type="submit" className="btn-primary w-full py-4 text-lg mb-4">
-                  Donate ${customAmount || donationAmount}
-                </button>
-                
-                <p className="text-[10px] text-ga-navy/40 text-center leading-tight">
-                  Paid for by Marcus Ryan for Georgia. Contributions are not tax deductible for federal income tax purposes. 
-                  Georgia law requires us to use our best efforts to collect and report the name, mailing address, 
-                  occupation and name of employer of individuals whose contributions exceed $100 per election cycle.
-                </p>
-              </form>
-            </div>
-          </div>
-        </div>
-      </Section>
-
-      {/* Events Section */}
-      <Section id="events" subtitle="Connect" title="Upcoming Events">
-        <div className="grid md:grid-cols-3 max-w-6xl mx-auto gap-8">
-          <EventCard 
-            title="Official Campaign Launch" 
-            date="Mar 28, 2026" 
-            time="4:30 PM" 
-            location="7 South Highway, Lakeland, GA"
-          />
-          <EventCard 
-            title="Democratic Party Meet Up" 
-            date="Apr 11, 2026" 
-            time="6:00 PM - 8:00 PM" 
-            location="Atlanta, Georgia"
-          />
-          <EventCard 
-            title="Election Day" 
-            date="Nov 03, 2026" 
-            time="7:00 AM - 7:00 PM" 
-            location="Your Local Polling Place, District 176"
-          />
-        </div>
-        <OfficeFinder />
-        <div className="mt-12 text-center">
-          <button className="btn-outline">View All Events</button>
-        </div>
-      </Section>
-
-      {/* Volunteer Section */}
-      <Section id="volunteer" subtitle="Get Involved" title="Join the Team" className="bg-ga-navy text-white">
-        <div className="max-w-3xl mx-auto">
-          <form className="space-y-6">
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-bold mb-2 text-ga-gold uppercase tracking-wider">Full Name</label>
-                <input type="text" className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 outline-none focus:border-ga-gold transition-colors" placeholder="John Doe" />
-              </div>
-              <div>
-                <label className="block text-sm font-bold mb-2 text-ga-gold uppercase tracking-wider">Email Address</label>
-                <input type="email" className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 outline-none focus:border-ga-gold transition-colors" placeholder="john@example.com" />
-              </div>
-            </div>
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-bold mb-2 text-ga-gold uppercase tracking-wider">Phone Number</label>
-                <input type="tel" className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 outline-none focus:border-ga-gold transition-colors" placeholder="(404) 555-0123" />
-              </div>
-              <div>
-                <label className="block text-sm font-bold mb-2 text-ga-gold uppercase tracking-wider">City</label>
-                <input type="text" className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 outline-none focus:border-ga-gold transition-colors" placeholder="Atlanta" />
-              </div>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-bold mb-4 text-ga-gold uppercase tracking-wider">Areas of Interest</label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {[
-                  'Door Knocking', 
-                  'Phone Banking', 
-                  'Social Media Support', 
-                  'Data Entry', 
-                  'Event Planning', 
-                  'Community Outreach',
-                  'Yard Sign Delivery',
-                  'Fundraising',
-                  'Translation Services'
-                ].map((opt) => (
-                  <label key={opt} className="flex items-center space-x-3 cursor-pointer group bg-white/5 p-3 rounded-xl border border-white/10 hover:border-ga-gold/50 transition-all">
-                    <input type="checkbox" className="w-5 h-5 rounded border-white/20 bg-white/10 text-ga-gold focus:ring-ga-gold focus:ring-offset-ga-navy" />
-                    <span className="text-sm font-medium">{opt}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-bold mb-2 text-ga-gold uppercase tracking-wider">Message (Optional)</label>
-              <textarea rows={4} className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 outline-none focus:border-ga-gold transition-colors" placeholder="Tell us why you're joining..."></textarea>
-            </div>
-
-            <button type="submit" className="btn-primary w-full py-4 text-lg !bg-ga-gold !text-ga-navy hover:!bg-white">
-              Sign Up to Volunteer
-            </button>
-          </form>
-        </div>
-      </Section>
-
-      {/* Testimonial Strip */}
-      <div className="bg-ga-red py-12 px-4 overflow-hidden relative">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-around gap-8 text-white">
-          <div className="text-center md:text-left max-w-sm">
-            <p className="italic text-xl mb-2">"Marcus Ryan is exactly the kind of leader Georgia needs—principled, hardworking, and focused on results."</p>
-            <p className="font-bold uppercase tracking-widest text-xs">— Sarah J., Small Business Owner</p>
-          </div>
-          <div className="h-12 w-px bg-white/20 hidden md:block"></div>
-          <div className="text-center md:text-left max-w-sm">
-            <p className="italic text-xl mb-2">"I've seen Marcus in action. He doesn't just talk about problems; he rolls up his sleeves and fixes them."</p>
-            <p className="font-bold uppercase tracking-widest text-xs">— David M., Community Leader</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Voting Reminder Strip */}
-      <div className="bg-ga-gold py-8 px-4 text-center border-b border-ga-navy/10">
-        <div className="max-w-4xl mx-auto">
-          <p className="text-xl md:text-2xl font-bold text-ga-navy">
-            Vote FOR Marcus Ryan for State House election in 2026 district 176 November 3, 2026. A leader we can trust.
-          </p>
-        </div>
-      </div>
+        } />
+        <Route path="/donate" element={<DonatePage />} />
+        <Route path="/donate/checkout" element={<CheckoutPage />} />
+      </Routes>
 
       {/* Footer */}
       <footer className="bg-ga-navy text-white pt-20 pb-10 px-4 sm:px-6 lg:px-8 border-t border-white/5">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-4 gap-12 mb-16">
             <div className="col-span-2">
-              <a href="#" className="flex flex-col mb-6">
+              <Link to="/" className="flex flex-col mb-6">
                 <span className="text-3xl font-display font-black tracking-tighter">
                   RYAN<span className="text-ga-red">FOR</span>GA
                 </span>
                 <span className="text-xs uppercase tracking-[0.3em] font-bold text-ga-gold">
                   For State House • District 176
                 </span>
-              </a>
+              </Link>
               <p className="text-white/60 max-w-md mb-8 leading-relaxed">
                 Real leadership Real results
               </p>
@@ -682,11 +773,11 @@ export default function App() {
             <div>
               <h4 className="font-bold uppercase tracking-widest text-sm mb-6 text-ga-gold">Quick Links</h4>
               <ul className="space-y-4 text-white/70">
-                <li><a href="#about" className="hover:text-white transition-colors">About Marcus</a></li>
-                <li><a href="#issues" className="hover:text-white transition-colors">The Issues</a></li>
-                <li><a href="#events" className="hover:text-white transition-colors">Events</a></li>
-                <li><a href="#volunteer" className="hover:text-white transition-colors">Volunteer</a></li>
-                <li><a href="#donate" className="hover:text-white transition-colors">Donate</a></li>
+                <li><Link to="/#about" className="hover:text-white transition-colors">About Marcus</Link></li>
+                <li><Link to="/#issues" className="hover:text-white transition-colors">The Issues</Link></li>
+                <li><Link to="/#events" className="hover:text-white transition-colors">Events</Link></li>
+                <li><Link to="/#volunteer" className="hover:text-white transition-colors">Volunteer</Link></li>
+                <li><Link to="/donate" className="hover:text-white transition-colors">Donate</Link></li>
               </ul>
             </div>
 
