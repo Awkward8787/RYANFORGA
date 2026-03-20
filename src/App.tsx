@@ -95,7 +95,7 @@ const PayPalDonateButton = () => {
     }
   }, []);
 
-  return <div id="paypal-container-PP2Q2GAWFAK86" className="flex justify-center min-h-[150px] items-center"></div>;
+  return <div id="paypal-container-PP2Q2GAWFAK86" className="w-full min-h-[300px] block"></div>;
 };
 
 const NavItem = ({ link, mobile = false, scrolled, isHomePage, setIsOpen }: { key?: string, link: any, mobile?: boolean, scrolled: boolean, isHomePage: boolean, setIsOpen: (open: boolean) => void }) => {
@@ -622,19 +622,20 @@ const LandingPage = ({ upcomingEvents, news, openIssue, setOpenIssue }: any) => 
 );
 
 const CheckoutPage = () => (
-  <div className="min-h-screen bg-ga-navy flex items-center justify-center p-4">
+  <div className="min-h-screen bg-ga-navy flex items-center justify-center p-6">
     <motion.div 
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="max-w-lg w-full bg-white rounded-[3rem] shadow-[0_30px_100px_rgba(0,0,0,0.5)] p-10 lg:p-16 flex flex-col items-center justify-center"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="w-full max-w-2xl bg-white rounded-[3rem] shadow-[0_40px_120px_rgba(0,0,0,0.6)] p-10 md:p-16"
     >
-      <div className="w-full">
+      <div className="w-full overflow-hidden">
         <PayPalDonateButton />
       </div>
       
-      <div className="mt-10 flex items-center justify-center gap-6 text-[10px] font-bold uppercase tracking-widest text-ga-navy/20">
-        <span className="flex items-center"><Shield size={12} className="mr-1.5" /> Secure Checkout</span>
-        <span className="flex items-center"><CheckCircle2 size={12} className="mr-1.5" /> Verified</span>
+      <div className="mt-12 pt-8 border-t border-ga-navy/5 flex flex-wrap items-center justify-center gap-8 text-[10px] font-bold uppercase tracking-widest text-ga-navy/30">
+        <span className="flex items-center"><Shield size={14} className="mr-2 text-ga-red" /> Secure Checkout</span>
+        <span className="flex items-center"><CheckCircle2 size={14} className="mr-2 text-ga-red" /> Verified Payment</span>
+        <span className="flex items-center"><Heart size={14} className="mr-2 text-ga-red" /> Grassroots Support</span>
       </div>
     </motion.div>
   </div>
