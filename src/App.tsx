@@ -91,7 +91,7 @@ const Navbar = () => {
                 RYAN<span className="text-ga-red">FOR</span>GA
               </span>
               <span className={`text-[10px] uppercase tracking-widest sm:tracking-[0.2em] font-bold ${scrolled ? 'text-ga-navy/60' : 'text-white/80'}`}>
-                Democrat for State House • District 176
+                For State House • District 176
               </span>
             </a>
           </div>
@@ -211,19 +211,6 @@ const Section = ({ id, title, subtitle, children, className = "", dark = false }
       {children}
     </div>
   </section>
-);
-
-const IssueCard = ({ icon: Icon, title, description }: any) => (
-  <motion.div 
-    whileHover={{ y: -5 }}
-    className="card-hover p-8 rounded-2xl"
-  >
-    <div className="w-14 h-14 bg-ga-navy/5 rounded-xl flex items-center justify-center mb-6 text-ga-red">
-      <Icon size={32} />
-    </div>
-    <h3 className="text-xl font-bold mb-3">{title}</h3>
-    <p className="text-ga-navy/70 leading-relaxed">{description}</p>
-  </motion.div>
 );
 
 const EventCard = ({ title, date, time, location, rsvpLink }: any) => (
@@ -628,7 +615,7 @@ export default function App() {
                   RYAN<span className="text-ga-red">FOR</span>GA
                 </span>
                 <span className="text-xs uppercase tracking-[0.3em] font-bold text-ga-gold">
-                  Democrat for State House • District 176
+                  For State House • District 176
                 </span>
               </a>
               <p className="text-white/60 max-w-md mb-8 leading-relaxed">
