@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/banner.png" alt="Ryan for Georgia" width="100%">
+  <img src="assets/banner.png" alt="Ryan for Georgia" width="100%">
 </p>
 
 # Ryan for Georgia
@@ -12,6 +12,18 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6&logo=typescript&logoColor=white)
 
 Vite/React site with about, issues, events, volunteer, and donate sections. Footer states © 2026 RyanForGeorgia.com. Stock AI Studio README was replaced.
+
+
+## How it works
+
+```mermaid
+flowchart LR
+  V[Visitor] --> C[Campaign site]
+  C --> A[Meet Marcus / priorities]
+  C --> E[Events · volunteer · donate]
+```
+
+Vite/React campaign site for Marcus Ryan (GA House District 176). Georgia-themed navy / red / gold styling.
 
 ## Features
 
